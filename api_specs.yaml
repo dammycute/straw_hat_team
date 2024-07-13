@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: Comprehensive SaaS Platform API
-  version: 2.0.0
-  description: API for a full-featured SaaS platform including authentication, payments, user management, and more.
+  title: Straw Hat Team Comprehensive API
+  version: 1.0.0
+  description: API for a full-featured Product/SaaS platform including authentication, payments, user management, and more.
 
 paths:
   # Authentication
@@ -669,9 +669,12 @@ paths:
                 type: string
 
   # Payments
-  /payments/stripe:
+
+  /payments/stripe/create:
     post:
-      summary: Process a Stripe payment
+      summary: Create a payment using Stripe
+      tags:
+        - Payments
       requestBody:
         content:
           application/json:
@@ -679,31 +682,304 @@ paths:
               $ref: '#/components/schemas/StripePaymentRequest'
       responses:
         '200':
-          description: Payment processed successfully
+          description: Payment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StripePaymentResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'The request was unacceptable, often due to missing a required parameter.'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'No valid API key provided.'
+        '402':
+          description: Request Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'The parameters were valid but the request failed.'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'The API key doesn’t have permissions to perform the request.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'The requested resource doesn’t exist.'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'The request conflicts with another request (perhaps due to using the same idempotent key).'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Something went wrong on Stripe’s end. (These are rare.)'
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Something went wrong on Stripe’s end. (These are rare.)'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Something went wrong on Stripe’s end. (These are rare.)'
+        '504':
+          description: Gateway Timeout
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Something went wrong on Stripe’s end. (These are rare.)'
 
-  /payments/flutterwave:
+  /payments/stripe/{id}:
+    get:
+      summary: Fetch a Stripe transaction
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the Stripe transaction to fetch
+      responses:
+        '200':
+          description: Transaction fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StripePaymentTransactionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /payments/stripe/cancel/{id}:
+    get:
+      summary: Cancel a previously created payout if its status is pending
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the Stripe transaction to fetch
+      responses:
+        '200':
+          description: Transaction cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentTransactionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /payments/flutterwave/create:
     post:
-      summary: Process a Flutterwave payment
+      summary: Create a transaction via Flutterwave
+      tags:
+        - Payments
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FlutterwavePaymentRequest'
+              $ref: '#/components/schemas/CreateFlutterwavePaymentRequest'
       responses:
         '200':
-          description: Payment processed successfully
+          description: Transaction created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlutterwaveTransactionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
-  /payments/lemonsqueezy:
-    post:
-      summary: Process a LemonSqueezy payment
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LemonSqueezyPaymentRequest'
+  /payments/flutterwave/{id}:
+    get:
+      summary: Fetch a transaction by ID from Flutterwave
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the transaction to fetch
       responses:
         '200':
-          description: Payment processed successfully
+          description: Transaction details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlutterTransactionDetails'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlutterwaveNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /payments/flutterwave/cancel/{id}:
+    get:
+      summary: Cancel a previously created payout if its status is pending
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the Flutterwave transaction to fetch
+      responses:
+        '200':
+          description: Transaction cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlutterCancelledTransactionDetails'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlutterwaveNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
   # Messaging
 
@@ -933,26 +1209,119 @@ paths:
   /dashboard:
     get:
       summary: Get dashboard data
+      tags:
+        - Dashboard
       responses:
         '200':
           description: Dashboard data
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DashboardDataResponse'
+                $ref: '#/components/schemas/DashboardResponse'
+  /dashboard/widgets:
+    get:
+      summary: List dashboard widgets
+      tags:
+        - Dashboard
+      responses:
+        '200':
+          description: List of dashboard widgets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WidgetListResponse'
+  /dashboard/widgets/{id}:
+    get:
+      summary: Get widget details
+      tags:
+        - Dashboard
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Widget details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WidgetResponse'
 
-  # Waitlist
+  # Waitlist Management
   /waitlist:
+    get:
+      summary: List waitlist entries
+      tags:
+        - Waitlist
+      responses:
+        '200':
+          description: List of waitlist entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitlistListResponse'
     post:
-      summary: Join the waitlist
+      summary: Create a new waitlist entry
+      tags:
+        - Waitlist
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WaitlistRequest'
+              $ref: '#/components/schemas/CreateWaitlistRequest'
+      responses:
+        '201':
+          description: Waitlist entry created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitlistResponse'
+  /waitlist/{id}:
+    delete:
+      summary: Delete a waitlist entry
+      tags:
+        - Waitlist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Waitlist entry deleted successfully
+
+  # Marketing Page
+  /squeeze:
+    get:
+      summary: Get marketing page content
+      tags:
+        - Marketing Page
       responses:
         '200':
-          description: Successfully joined the waitlist
+          description: Marketing page content
+          content:
+            text/html:
+              schema:
+                type: string
+    post:
+      summary: Create marketing page content
+      tags:
+        - Marketing Page
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMarketingPageRequest'
+      responses:
+        '201':
+          description: Marketing page content created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketingPageResponse'
 
   # Invite System
   /invites:
@@ -1218,111 +1587,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LocalizationResponse'
-
-  #Email Templates
-  /email-templates:
-  get:
-    summary: Get all email templates
-    responses:
-      '200':
-      description: All email templates
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/AdminEmailTemplatesResponse'
-  post:
-    summary: Create a new email template
-    requestBody:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/EmailTemplateRequest'
-    responses:
-      '201':
-      description: Email template created successfully
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/EmailTemplateResponse'
-
-  /email-templates/{id}:
-    put:
-      summary: Update an email template
-      parameters:
-        - name: id
-          in: path
-          description: ID of the email template to update
-          required: true
-          schema:
-            type: string # Assuming ID is of type string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmailTemplateRequest'
-      responses:
-        '200':
-          description: Email template updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmailTemplateResponse'
-
-    delete:
-      summary: Delete an email template
-      parameters:
-        - name: id
-          in: path
-          description: ID of the email template to delete
-          required: true
-          schema:
-            type: string # Assuming ID is of type string
-      responses:
-        '200':
-          description: Email template deleted successfully
-  #Activity Log
-  /activity-logs:
-    get:
-      summary: Get all activity logs
-      description: Get all activity logs
-      responses:
-        '200':
-        description: Activity logs retrieved successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ActivityLogResponse'
-
-  #Push Notifications
-  /push-notifications:
-    get:
-      summary: Get all push notifications
-      description: Retrieve all push notifications
-      responses:
-        '200':
-          description: Push notifications retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PushNotificationResponse'
-
-    post:
-      summary: Create a push notification
-      description: Create a new push notification
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PushNotificationRequest'
-      responses:
-        '200':
-          description: Push notification created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PushNotificationResponse'
 
 components:
   schemas:
@@ -1688,33 +1952,422 @@ components:
             $ref: '#/components/schemas/OrganizationResponse'
 
     # Payments
+
     StripePaymentRequest:
       type: object
       properties:
         amount:
-          type: number
+          type: integer
+          description: Amount intended to be collected by this payment. A positive integer representing how much to charge in the smallest currency unit (e.g., 100 cents to charge $1.00).
+          example: 1000
         currency:
           type: string
-        source:
+          description: Three-letter ISO currency code, in lowercase. Must be a supported currency.
+          example: usd
+        stripe_account:
           type: string
-    FlutterwavePaymentRequest:
+          description: The ID of the Stripe account to send the payment to.
+          example: acct_1F4bfx2eZvKYlo2C95zswH4a
+
+    StripePaymentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the payment.
+          example: ch_1F4bfx2eZvKYlo2C95zswH4a
+        amount:
+          type: integer
+          description: Amount intended to be collected by this payment.
+          example: 1000
+        currency:
+          type: string
+          description: Three-letter ISO currency code.
+          example: usd
+        message:
+          type: string
+          example: Everything worked as expected.
+
+    StripePaymentTransactionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'po_1OaFDbEcg9tTZuTgNYmX0PKB'
+        object:
+          type: string
+          example: 'payout'
+        amount:
+          type: integer
+          example: 1100
+        arrival_date:
+          type: integer
+          example: 1680652800
+        automatic:
+          type: boolean
+          example: false
+        balance_transaction:
+          type: string
+          example: 'txn_1OaFDcEcg9tTZuTgYMR25tSe'
+        created:
+          type: integer
+          example: 1680648691
+        currency:
+          type: string
+          example: 'usd'
+        description:
+          type: string
+          nullable: true
+          example: null
+        destination:
+          type: string
+          example: 'ba_1MtIhL2eZvKYlo2CAElKwKu2'
+        failure_balance_transaction:
+          type: string
+          nullable: true
+          example: null
+        failure_code:
+          type: string
+          nullable: true
+          example: null
+        failure_message:
+          type: string
+          nullable: true
+          example: null
+        livemode:
+          type: boolean
+          example: false
+        metadata:
+          type: object
+          example: {}
+        method:
+          type: string
+          example: 'standard'
+        original_payout:
+          type: string
+          nullable: true
+          example: null
+        reconciliation_status:
+          type: string
+          example: 'not_applicable'
+        reversed_by:
+          type: string
+          nullable: true
+          example: null
+        source_type:
+          type: string
+          example: 'card'
+        statement_descriptor:
+          type: string
+          nullable: true
+          example: null
+        status:
+          type: string
+          example: 'pending'
+        type:
+          type: string
+          example: 'bank_account'
+
+    CreateFlutterwavePaymentRequest:
       type: object
       properties:
         amount:
           type: number
+          example: 50
+        narration:
+          type: string
+          example: Test Int'l bank transfers
         currency:
           type: string
-        source:
+          enum: [USD, NGN, EUR] # Adjust currencies as needed
+          example: USD
+        reference:
           type: string
-    LemonSqueezyPaymentRequest:
+          example: new-intl-test-transfer1
+        beneficiary_name:
+          type: string
+          example: Flutterwave Developers
+        meta:
+          type: array
+          items:
+            type: object
+            properties:
+              account_number:
+                type: string
+                example: 09182972BH
+              routing_number:
+                type: string
+                example: '0000000002993'
+              swift_code:
+                type: string
+                example: ABJG190
+              bank_name:
+                type: string
+                example: 'BANK OF AMERICA, N.A., SAN FRANCISCO, CA'
+              beneficiary_name:
+                type: string
+                example: Flutterwave Developers
+              beneficiary_address:
+                type: string
+                example: San Francisco, 4 Newton
+              beneficiary_country:
+                type: string
+                example: US
+
+    FlutterwaveTransactionResponse:
       type: object
       properties:
-        amount:
-          type: number
-        currency:
+        status:
           type: string
-        source:
+          example: success
+        message:
           type: string
+          example: Transfer Queued Successfully
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 221082
+            account_number:
+              type: string
+              example: FOREIGN-ACCOUNT
+            bank_code:
+              type: string
+              example: FOREIGN-BANK
+            full_name:
+              type: string
+              example: Mark Cuban
+            created_at:
+              type: string
+              format: date-time
+              example: '2023-11-08T15:43:47.000Z'
+            currency:
+              type: string
+              example: USD
+            amount:
+              type: number
+              example: 500
+            fee:
+              type: number
+              example: 45
+            status:
+              type: string
+              example: NEW
+            reference:
+              type: string
+              example: d1a5b51a94ed0607
+            meta:
+              type: array
+              items:
+                type: object
+                properties:
+                  RoutingNumber:
+                    type: string
+                    example: '0000000002993'
+                  SwiftCode:
+                    type: string
+                    example: ABJG190
+                  BankName:
+                    type: string
+                    example: 'BANK OF AMERICA, N.A., SAN FRANCISCO, CA'
+                  BeneficiaryName:
+                    type: string
+                    example: Mark Cuban
+                  BeneficiaryAddress:
+                    type: string
+                    example: San Francisco, 4 Newton
+                  BeneficiaryCountry:
+                    type: string
+                    example: US
+                  MerchantName:
+                    type: string
+                    example: Glory Amuah
+                  SenderCountry:
+                    type: string
+                    example: NG
+                  SenderAddress:
+                    type: string
+                    example: Lagos
+                  SenderMobileNumber:
+                    type: string
+                    example: '+2348140244958'
+                  AccountNumber:
+                    type: string
+                    example: FOREIGN-ACCOUNT
+                  Sender:
+                    type: string
+                    example: Glory Amuah
+                  Address:
+                    type: string
+                    example: San Francisco, 4 Newton
+                  MobileNumber:
+                    type: string
+                    example: '23480000000000'
+            narration:
+              type: string
+              example: Test Int'l bank transfers
+            complete_message:
+              type: string
+              example: ''
+            requires_approval:
+              type: integer
+              example: 0
+            is_approved:
+              type: integer
+              example: 1
+            bank_name:
+              type: string
+              example: FA-BANK
+
+    FlutterTransactionDetails:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Transfer fetched
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1933222
+            account_number:
+              type: string
+              example: '0251238458'
+            bank_code:
+              type: string
+              example: '058'
+            full_name:
+              type: string
+              example: 'Flutterwave Developers'
+            created_at:
+              type: string
+              format: date-time
+              example: '2020-06-11T00:36:20.000Z'
+            currency:
+              type: string
+              example: 'NGN'
+            debit_currency:
+              type: string
+              example: 'NGN'
+            amount:
+              type: number
+              example: 300
+            fee:
+              type: number
+              example: 10.75
+            status:
+              type: string
+              example: SUCCESSFUL
+            reference:
+              type: string
+              example: 'new-actual-transfer-ref1'
+            meta:
+              type: null
+              example: null
+            narration:
+              type: string
+              example: 'Akhlm Pstmn Trnsfr xx007'
+            approver:
+              type: null
+              example: null
+            complete_message:
+              type: string
+              example: 'Transaction was successful'
+            requires_approval:
+              type: integer
+              example: 0
+            is_approved:
+              type: integer
+              example: 1
+            bank_name:
+              type: string
+              example: 'GTBANK PLC'
+
+    FlutterCancelledTransactionDetails:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Transfer cancelled
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1933222
+            account_number:
+              type: string
+              example: '0251238458'
+            bank_code:
+              type: string
+              example: '058'
+            full_name:
+              type: string
+              example: 'Flutterwave Developers'
+            created_at:
+              type: string
+              format: date-time
+              example: '2020-06-11T00:36:20.000Z'
+            currency:
+              type: string
+              example: 'NGN'
+            debit_currency:
+              type: string
+              example: 'NGN'
+            amount:
+              type: number
+              example: 300
+            fee:
+              type: number
+              example: 10.75
+            status:
+              type: string
+              example: SUCCESSFUL
+            reference:
+              type: string
+              example: 'new-actual-transfer-ref1'
+            meta:
+              type: null
+              example: null
+            narration:
+              type: string
+              example: 'Akhlm Pstmn Trnsfr xx007'
+            approver:
+              type: null
+              example: null
+            complete_message:
+              type: string
+              example: 'Transaction was cancelled by sender'
+            requires_approval:
+              type: integer
+              example: 0
+            is_approved:
+              type: integer
+              example: 1
+            bank_name:
+              type: string
+              example: 'GTBANK PLC'
+
+    FlutterwaveNotFoundError:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        message:
+          type: string
+          example: Transfer not found
+        data:
+          type: null
+          example: null
 
     # Messaging
 
@@ -1824,6 +2477,43 @@ components:
         body:
           type: string
 
+    # CreateEmailTemplateRequest:
+    #   type: object
+    #   properties:
+    #     name:
+    #       type: string
+    #     subject:
+    #       type: string
+    #     body:
+    #       type: string
+    # UpdateEmailTemplateRequest:
+    #   type: object
+    #   properties:
+    #     name:
+    #       type: string
+    #     subject:
+    #       type: string
+    #     body:
+    #       type: string
+    # EmailTemplateResponse:
+    #   type: object
+    #   properties:
+    #     id:
+    #       type: string
+    #     name:
+    #       type: string
+    #     subject:
+    #       type: string
+    #     body:
+    #       type: string
+    # EmailTemplateListResponse:
+    #   type: object
+    #   properties:
+    #     templates:
+    #       type: array
+    #       items:
+    #         $ref: '#/components/schemas/EmailTemplateResponse'
+
     # Settings
     CreateSettingsRequest:
       type: object
@@ -1883,18 +2573,71 @@ components:
         consent:
           type: string
 
-    # Dashboard Data
-    DashboardDataResponse:
+    # Dashboard
+    DashboardResponse:
       type: object
       properties:
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/WidgetResponse'
+    WidgetListResponse:
+      type: object
+      properties:
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/WidgetResponse'
+    WidgetResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
         data:
           type: object
 
     # Waitlist
-    WaitlistRequest:
+    CreateWaitlistRequest:
       type: object
       properties:
         email:
+          type: string
+          format: email
+    WaitlistResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+    WaitlistListResponse:
+      type: object
+      properties:
+        waitlist:
+          type: array
+          items:
+            $ref: '#/components/schemas/WaitlistResponse'
+
+    # Marketing Page
+    CreateMarketingPageRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+    MarketingPageResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
           type: string
 
     # Invite System
@@ -2046,43 +2789,6 @@ components:
           type: string
         region:
           type: string
-
-    # Email Templates
-    AdminEmailTemplatesResponse:
-      type: object
-      properties:
-        templates:
-          type: array
-          items:
-            type: string
-    EmailTemplateRequest:
-      type: object
-      properties:
-        template:
-        type: string
-
-    #Activity Log
-    ActivityLogResponse:
-      type: object
-      properties:
-        activityLog:
-          type: array
-          items:
-            type: string
-
-    #Push Notification
-    PushNotificationResponse:
-      type: object
-      properties:
-      pushNotification:
-        type: array
-        items:
-          type: string
-    PushNotificationRequest:
-      type: object
-      properties:
-      pushNotification:
-        type: string
 
   securitySchemes:
     bearerAuth:
