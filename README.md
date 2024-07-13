@@ -15,42 +15,122 @@ Our API is designed using OpenAPI 3.0.0 specification. It provides a comprehensi
 
 ### Key Endpoints:
 
-1. Authentication
+[Full OpenAPI specification](https://github.com/dammycute/straw_hat_team/blob/straw_hat_team/api_specs.yaml)
+
+1. Home
+   - GET /
+   - GET /privacy-policy
+   - GET /about-us
+   - GET /contact-us
+
+2. Authentication
    - POST /auth/signup
    - POST /auth/login
    - POST /auth/social-login/{provider}
    - POST /auth/magic-link
    - POST /auth/reset-password
 
-2. User Management
+3. User Management
    - GET /users
    - POST /users
    - GET /users/{userId}
    - PUT /users/{userId}
    - DELETE /users/{userId}
 
-3. Organization Management
+4. Organization Management
    - GET /organizations
    - POST /organizations
    - GET /organizations/{orgId}
    - PUT /organizations/{orgId}
    - DELETE /organizations/{orgId}
 
-4. Payments
+5. Superadmin Interface
+   - GET /admin/users
+   - GET /admin/users/{id}
+   - GET /admin/orgs
+   - GET /admin/orgs/{id}
+   - GET /admin/payments
+   - GET /admin/activity-logs
+
+6. Payments
    - POST /payments/stripe
    - POST /payments/flutterwave
    - POST /payments/lemonsqueezy
 
-5. Messaging
+7. Messaging
    - POST /messages/email
    - GET /messages/templates
    - POST /messages/templates
 
-[Full OpenAPI specification](https://github.com/dammycute/straw_hat_team/blob/straw_hat_team/api_specs.yaml)
+8. Settings and profile
+   - GET /settings
+   - POST /settings
+   - PUT /settings/{id}
+   - DELETE /settings/{id}
+   - GET /profile/settings
+   - PUT /profile/settings
+
+7. GDPR
+   - POST /gdpr/consent
+
+8. Dashboard
+   - GET /dashboard
+
+9. Waitlist
+   - POST /waitlist
+
+10. Invite System
+   - POST /invites
+   - GET /invites
+   - POST /invites/{inviteId}/accept
+
+11. User Data
+   - GET /user-data
+   - POST /user-data
+   - POST /invites/{inviteId}/accept
+   - GET /user-data/{dataId}
+   - PUT /user-data/{dataId}
+   - DELETE /user-data/{dataId}
+
+12. Search
+   - GET /search
+
+13. Analytics
+   - GET /analytics/chart
+
+14. Notification
+   - GET /notification
+   - POST /notification
+
+15. Blog
+   - GET /blog
+   - POST /blog
+   - GET /blog/{postId}
+   - PUT /blog/{postId}
+   - DELETE /blog/{postId}
+
+16. Localization
+   - GET /localization
+   - PUT /localization
+
+17. Admin Email Templating
+   - GET /admin/email-templates
+   - POST /admin/email-templates
+   - PUT /admin/email-templates/{id}
+   - DELETE /admin/email-templates/{id}
+
+18. Activity Logs
+   - GET /activity-logs
+
+19. Push Notification
+   - GET /push-notifications
+   - POST /push-notifications
 
 ## III. Database Design
 
 Our database is designed to support all the features of the SaaS platform efficiently. It includes tables for users, organizations, roles, payments, content management, and more.
+
+<iframe width="100%" height="500px" style="box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); border-radius:15px;" allowtransparency="true" allowfullscreen="true" scrolling="no" title="Embedded DrawSQL IFrame" frameborder="0" src="https://drawsql.app/teams/htcode/diagrams/htcode/embed"></iframe>
 
 ### Key Tables:
 
