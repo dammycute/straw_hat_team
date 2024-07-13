@@ -6,26 +6,51 @@ info:
 
 paths:
   # Authentication
-  /auth/signup:
+
+  /auth/register:
     post:
       summary: Create a new user account
+      tags:
+        - Authentication
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignUpRequest'
+              $ref: '#/components/schemas/RegisterRequest'
       responses:
-        '200':
-          description: Successful signup
+        '201':
+          description: Account created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: '#/components/schemas/RegisterResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '409':
+          description: Conflict - Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputConflictError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
   /auth/login:
     post:
-      summary: Log in a user
+      summary: Log in a user and generate access token
+      tags:
+        - Authentication
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -36,11 +61,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized - Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
-  /auth/social-login/{provider}:
-    post:
-      summary: Authenticate user via social login
+  /auth/social/{provider}/callback:
+    get:
+      summary: Handle callback from social authentication provider
+      tags:
+        - Authentication
       parameters:
         - in: path
           name: provider
@@ -55,15 +100,35 @@ paths:
               $ref: '#/components/schemas/SocialLoginRequest'
       responses:
         '200':
-          description: Successful social login
+          description: Successful callback
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized - Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
   /auth/magic-link:
     post:
       summary: Send a magic link for passwordless authentication
+      tags:
+        - Authentication
       requestBody:
         content:
           application/json:
@@ -72,18 +137,134 @@ paths:
       responses:
         '200':
           description: Magic link sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MagicLinkResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
-  /auth/reset-password:
+  /auth/magic-link/verify:
+    get:
+      summary: Verify magic link authentication
+      tags:
+        - Authentication
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+          description: The magic link token to verify
+      responses:
+        '200':
+          description: Magic link verified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MagicLinkUnauthorizedError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /auth/change-password:
     post:
-      summary: Reset user password
+      summary: Change logged in user password
+      tags:
+        - Authentication
       requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangePasswordResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized - Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordResetUnauthorizedError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /auth/forgot-password:
+    post:
+      summary: Request password reset
+      tags:
+        - Authentication
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ResetPasswordRequest'
       responses:
         '200':
-          description: Password reset successfully
+          description: Password reset link sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetPasswordResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not found - Email not registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
   # User Management
   /users:
@@ -610,8 +791,6 @@ paths:
         '204':
           description: Email template deleted successfully
 
-  
-
   # GDPR
   /gdpr/consent:
     post:
@@ -1006,19 +1185,256 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LocalizationResponse'
+                
+  #Email Templates
+  /email-templates:
+  get:
+    summary: Get all email templates
+    responses:
+      '200':
+      description: All email templates
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmailTemplatesResponse'
+  post:
+    summary: Create a new email template
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmailTemplateRequest'
+    responses:
+      '201':
+      description: Email template created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmailTemplateResponse'
+
+  /email-templates/{id}:
+    put:
+      summary: Update an email template
+      parameters:
+        - name: id
+        in: path
+        description: ID of the email template to update
+        required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailTemplateRequest'
+      responses:
+        '200':
+        description: Email template updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailTemplateResponse'
+    delete:
+      summary: Delete an email template
+      parameters:
+        - name: id
+        in: path
+        description: ID of the email template to delete
+        required: true
+      responses:
+        '200':
+        description: Email template deleted successfully
+
+  #Activity Log
+  /activity-logs:
+    get:
+      summary: Get all activity logs
+      description: Get all activity logs
+      responses:
+        '200':
+        description: Activity logs retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityLogResponse'
+
+  #Push Notifications
+  /push-notifications:
+    get:
+      summary: Get all push notifications
+      description: Get all push notifications
+      responses:
+        '200':
+        description: Push notifications retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PushNotificationResponse'
+    post:
+      summary: Create a push notification
+      description: Create a push notification
+      requestBody:
+        content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PushNotificationRequest'
+      responses:
+      '200':
+      description: Push notification created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PushNotificationResponse'
+
 
 components:
   schemas:
-    # Authentication
-    SignUpRequest:
+    #Errors
+    BadRequestError:
       type: object
       properties:
-        username:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: field_name
+              message:
+                type: string
+                example: 'Error message for bad request.'
+    InputConflictError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: email
+              message:
+                type: string
+                example: 'User with email address already exists.'
+
+    NotFoundError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: email
+              message:
+                type: string
+                example: 'Email not found.'
+
+    InternalServerError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: server
+              message:
+                type: string
+                example: 'Internal server error.'
+    UnauthorizedError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: email or password
+              message:
+                type: string
+                example: 'Invalid credentials.'
+    MagicLinkUnauthorizedError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: token
+              message:
+                type: string
+                example: 'Invalid Verifcation Token.'
+    PasswordResetUnauthorizedError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: old password
+              message:
+                type: string
+                example: 'Invalid credentials.'
+
+    # Authentication
+    RegisterRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - password
+      properties:
+        firstName:
           type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
         email:
           type: string
+          format: email
+          example: johndoe@example.com
         password:
           type: string
+          format: password
+          example: $trongPassword123
+
+    RegisterResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: 1a2b3c4d5e6f7g8h9i0j
+        firstName:
+          type: string
+          format: string
+          example: john
+        lastName:
+          type: string
+          format: string
+          example: doe
+        email:
+          type: string
+          format: email
+          example: johndoe@example.com
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
     LoginRequest:
       type: object
       properties:
@@ -1026,23 +1442,89 @@ components:
           type: string
         password:
           type: string
+
+    LoginResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: 1a2b3c4d5e6f7g8h9i0j
+        firstName:
+          type: string
+          format: string
+          example: John
+        lastName:
+          type: string
+          format: string
+          example: Doe
+        uniqueId:
+          type: string
+          example: john_doe-123
+        email:
+          type: string
+          format: email
+          example: johndoe@example.com
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
     SocialLoginRequest:
       type: object
       properties:
         token:
           type: string
+
     MagicLinkRequest:
       type: object
       properties:
         email:
           type: string
+          example: johndoe@example.com
+
+    MagicLinkResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Magic link sent to your email.
+
+    ChangePasswordRequest:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+          example: $trongPassword123
+        newPassword:
+          type: string
+          example: $newStrongPassword123
+        confirmNewPassword:
+          type: string
+          example: $newStrongPassword123
+
+    ChangePasswordResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Password updated successfully.
+
     ResetPasswordRequest:
       type: object
       properties:
         email:
+          type: email
+          example: johndoe@example.com
+
+    ResetPasswordResponse:
+      type: object
+      properties:
+        message:
           type: string
-        newPassword:
-          type: string
+          example: Password reset link sent to your email.
+
+    RefreshTokenRequest:
+      type: object
+
     AuthResponse:
       type: object
       properties:
@@ -1234,7 +1716,6 @@ components:
         value:
           type: string
 
-    
     # Contact Form
     ContactFormRequest:
       type: object
@@ -1473,10 +1954,49 @@ components:
           type: string
         region:
           type: string
+    
+    # Email Templates
+    EmailTemplatesResponse:
+      type: object
+      properties:
+        templates:
+          type: array
+          items:
+            type: string
+    EmailTemplateRequest:
+      type: object
+      properties:
+        template:
+        type: string
+
+    #Activity Log
+    ActivityLogResponse:
+      type: object
+      properties:
+        activityLog:
+          type: array
+          items:
+            type: string
+
+    #Push Notification
+    PushNotificationResponse:
+      type: object
+      properties:
+      pushNotification:
+        type: array
+        items:
+          type: string
+    PushNotificationRequest:
+      type: object
+      properties:
+      pushNotification:
+        type: string
+
+
+
 
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-  
