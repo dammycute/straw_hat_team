@@ -933,26 +933,120 @@ paths:
   /dashboard:
     get:
       summary: Get dashboard data
+      tags:
+        - Dashboard
       responses:
         '200':
           description: Dashboard data
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DashboardDataResponse'
+                $ref: '#/components/schemas/DashboardResponse'
+  /dashboard/widgets:
+    get:
+      summary: List dashboard widgets
+      tags:
+        - Dashboard
+      responses:
+        '200':
+          description: List of dashboard widgets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WidgetListResponse'
+  /dashboard/widgets/{id}:
+    get:
+      summary: Get widget details
+      tags:
+        - Dashboard
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Widget details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WidgetResponse'
 
-  # Waitlist
+  # Waitlist Management
   /waitlist:
+    get:
+      summary: List waitlist entries
+      tags:
+        - Waitlist
+      responses:
+        '200':
+          description: List of waitlist entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitlistListResponse'
     post:
-      summary: Join the waitlist
+      summary: Create a new waitlist entry
+      tags:
+        - Waitlist
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WaitlistRequest'
+              $ref: '#/components/schemas/CreateWaitlistRequest'
+      responses:
+        '201':
+          description: Waitlist entry created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitlistResponse'
+  /waitlist/{id}:
+    delete:
+      summary: Delete a waitlist entry
+      tags:
+        - Waitlist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Waitlist entry deleted successfully
+
+  # Marketing Page
+  /squeeze:
+    get:
+      summary: Get marketing page content
+      tags:
+        - Marketing Page
       responses:
         '200':
-          description: Successfully joined the waitlist
+          description: Marketing page content
+          content:
+            text/html:
+              schema:
+                type: string
+    post:
+      summary: Create marketing page content
+      tags:
+        - Marketing Page
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMarketingPageRequest'
+      responses:
+        '201':
+          description: Marketing page content created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketingPageResponse'
+
 
   # Invite System
   /invites:
@@ -1815,18 +1909,71 @@ components:
         consent:
           type: string
 
-    # Dashboard Data
-    DashboardDataResponse:
+    # Dashboard
+    DashboardResponse:
       type: object
       properties:
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/WidgetResponse'
+    WidgetListResponse:
+      type: object
+      properties:
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/WidgetResponse'
+    WidgetResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
         data:
           type: object
 
     # Waitlist
-    WaitlistRequest:
+    CreateWaitlistRequest:
       type: object
       properties:
         email:
+          type: string
+          format: email
+    WaitlistResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+    WaitlistListResponse:
+      type: object
+      properties:
+        waitlist:
+          type: array
+          items:
+            $ref: '#/components/schemas/WaitlistResponse'
+
+# Marketing Page
+    CreateMarketingPageRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+    MarketingPageResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
           type: string
 
     # Invite System
