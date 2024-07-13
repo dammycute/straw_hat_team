@@ -15,7 +15,7 @@ Our API is designed using OpenAPI 3.0.0 specification. It provides a comprehensi
 
 ### Key Endpoints:
 
-[Full OpenAPI specification](https://github.com/dammycute/straw_hat_team/blob/straw_hat_team/api_specs.yaml)
+[Full OpenAPI specification](https://github.com/dammycute/straw_hat_team/blob/straw_hat_team/api_specs.yaml) <br />
 [SwaggerUI Documentation](https://app.swaggerhub.com/apis-docs/JUSTCOVENANT_1/your-api/1.0.0)
 
 1. Home
@@ -131,7 +131,7 @@ Our API is designed using OpenAPI 3.0.0 specification. It provides a comprehensi
 
 Our database is designed to support all the features of the SaaS platform efficiently. It includes tables for users, organizations, roles, payments, content management, and more.
 
-[Database Design](https://github.com/dammycute/straw_hat_team/blob/straw_hat_team/dbdesign.png)
+![Database Design](https://github.com/dammycute/straw_hat_team/blob/justcovenenat/dbdesign.png)
 
 
 
