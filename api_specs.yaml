@@ -42,12 +42,12 @@ paths:
     post:
       summary: Authenticate user via social login
       parameters:
-        - in: path
-          name: provider
-          required: true
-          schema:
-            type: string
-            enum: [google, facebook, twitter]
+      - in: path
+        name: provider
+        required: true
+        schema:
+          type: string
+          enum: [google, facebook, twitter]
       requestBody:
         content:
           application/json:
@@ -90,7 +90,7 @@ paths:
     get:
       summary: List users (for admin)
       tags:
-        - User Management
+      - User Management
       responses:
         '200':
           description: A list of users
@@ -101,7 +101,7 @@ paths:
     post:
       summary: Create a new user (for admin)
       tags:
-        - User Management
+      - User Management
       requestBody:
         content:
           application/json:
@@ -119,13 +119,13 @@ paths:
     get:
       summary: Get user details
       tags:
-        - User Management
+      - User Management
       parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: User details
@@ -136,13 +136,13 @@ paths:
     put:
       summary: Update user details
       tags:
-        - User Management
+      - User Management
       parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -158,13 +158,13 @@ paths:
     delete:
       summary: Delete a user
       tags:
-        - User Management
+      - User Management
       parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '204':
           description: User deleted successfully
@@ -174,7 +174,7 @@ paths:
     get:
       summary: List organizations
       tags:
-        - Organization Management
+      - Organization Management
       responses:
         '200':
           description: A list of all organizations
@@ -185,7 +185,7 @@ paths:
     post:
       summary: Create a new organization
       tags:
-        - Organization Management
+      - Organization Management
       requestBody:
         content:
           application/json:
@@ -203,13 +203,13 @@ paths:
     get:
       summary: Get organization details
       tags:
-        - Organization Management
+      - Organization Management
       parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Organization details
@@ -220,13 +220,13 @@ paths:
     put:
       summary: Update organization details
       tags:
-        - Organization Management
+      - Organization Management
       parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -242,13 +242,13 @@ paths:
     delete:
       summary: Delete an organization
       tags:
-        - Organization Management
+      - Organization Management
       parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         '204':
           description: Organization deleted successfully
@@ -258,7 +258,7 @@ paths:
     get:
       summary: List all users (admin)
       tags:
-        - Superadmin Interface
+      - Superadmin Interface
       responses:
         '200':
           description: List of all users
@@ -270,13 +270,13 @@ paths:
     get:
       summary: Get user details (admin)
       tags:
-        - Superadmin Interface
+      - Superadmin Interface
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: User details
@@ -288,7 +288,7 @@ paths:
     get:
       summary: List all organizations (admin)
       tags:
-        - Superadmin Interface
+      - Superadmin Interface
       responses:
         '200':
           description: List of all organizations
@@ -300,13 +300,13 @@ paths:
     get:
       summary: Get organization details (admin)
       tags:
-        - Superadmin Interface
+      - Superadmin Interface
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Organization details
@@ -318,7 +318,7 @@ paths:
     get:
       summary: List all payments (admin)
       tags:
-        - Superadmin Interface
+      - Superadmin Interface
       responses:
         '200':
           description: List of all payments
@@ -332,7 +332,7 @@ paths:
     get:
       summary: List all activity logs (admin)
       tags:
-        - Superadmin Interface
+      - Superadmin Interface
       responses:
         '200':
           description: List of all activity logs
@@ -348,7 +348,7 @@ paths:
     get:
       summary: Get settings
       tags:
-        - Settings and Profile
+      - Settings and Profile
       responses:
         '200':
           description: Settings details
@@ -359,7 +359,7 @@ paths:
     post:
       summary: Create settings
       tags:
-        - Settings and Profile
+      - Settings and Profile
       requestBody:
         content:
           application/json:
@@ -376,13 +376,13 @@ paths:
     put:
       summary: Update settings
       tags:
-        - Settings and Profile
+      - Settings and Profile
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -398,13 +398,13 @@ paths:
     delete:
       summary: Delete settings
       tags:
-        - Settings and Profile
+      - Settings and Profile
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
       responses:
         '204':
           description: Settings deleted successfully
@@ -412,7 +412,7 @@ paths:
     get:
       summary: Get profile settings
       tags:
-        - Settings and Profile
+      - Settings and Profile
       responses:
         '200':
           description: Profile settings details
@@ -423,7 +423,7 @@ paths:
     put:
       summary: Update profile settings
       tags:
-        - Settings and Profile
+      - Settings and Profile
       requestBody:
         content:
           application/json:
@@ -442,7 +442,7 @@ paths:
     get:
       summary: Get landing page
       tags:
-        - Landing and Static Pages
+      - Landing and Static Pages
       responses:
         '200':
           description: Landing page content
@@ -454,7 +454,7 @@ paths:
     get:
       summary: Get privacy policy page
       tags:
-        - Landing and Static Pages
+      - Landing and Static Pages
       responses:
         '200':
           description: Privacy policy page content
@@ -466,7 +466,7 @@ paths:
     get:
       summary: Get about us page
       tags:
-        - Landing and Static Pages
+      - Landing and Static Pages
       responses:
         '200':
           description: About us page content
@@ -478,7 +478,7 @@ paths:
     get:
       summary: Get contact us page
       tags:
-        - Landing and Static Pages
+      - Landing and Static Pages
       responses:
         '200':
           description: Contact us page content
@@ -566,11 +566,11 @@ paths:
     get:
       summary: Get email template details
       parameters:
-        - in: path
-          name: templateId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: templateId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Email template details
@@ -581,11 +581,11 @@ paths:
     put:
       summary: Update email template
       parameters:
-        - in: path
-          name: templateId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: templateId
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -601,16 +601,16 @@ paths:
     delete:
       summary: Delete an email template
       parameters:
-        - in: path
-          name: templateId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: templateId
+        required: true
+        schema:
+          type: string
       responses:
         '204':
           description: Email template deleted successfully
 
-  
+
 
   # GDPR
   /gdpr/consent:
@@ -676,11 +676,11 @@ paths:
     post:
       summary: Accept an invite
       parameters:
-        - in: path
-          name: inviteId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: inviteId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Invite accepted successfully
@@ -715,11 +715,11 @@ paths:
     get:
       summary: Get single user data item
       parameters:
-        - in: path
-          name: dataId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: dataId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: User data item
@@ -730,11 +730,11 @@ paths:
     put:
       summary: Update user data item
       parameters:
-        - in: path
-          name: dataId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: dataId
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -750,11 +750,11 @@ paths:
     delete:
       summary: Delete user data item
       parameters:
-        - in: path
-          name: dataId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: dataId
+        required: true
+        schema:
+          type: string
       responses:
         '204':
           description: User data item deleted successfully
@@ -764,11 +764,11 @@ paths:
     get:
       summary: Search across various data types
       parameters:
-        - in: query
-          name: query
-          required: true
-          schema:
-            type: string
+      - in: query
+        name: query
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Search results
@@ -845,11 +845,11 @@ paths:
     get:
       summary: Get blog post details
       parameters:
-        - in: path
-          name: postId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Blog post details
@@ -860,11 +860,11 @@ paths:
     put:
       summary: Update blog post
       parameters:
-        - in: path
-          name: postId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -880,11 +880,11 @@ paths:
     delete:
       summary: Delete a blog post
       parameters:
-        - in: path
-          name: postId
-          required: true
-          schema:
-            type: string
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
       responses:
         '204':
           description: Blog post deleted successfully
@@ -914,41 +914,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LocalizationResponse'
-                
+
   #Email Templates
   /email-templates:
-  get:
-    summary: Get all email templates
-    responses:
-      '200':
-      description: All email templates
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/EmailTemplatesResponse'
-  post:
-    summary: Create a new email template
-    requestBody:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/EmailTemplateRequest'
-    responses:
-      '201':
-      description: Email template created successfully
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/EmailTemplateResponse'
-
+    get:
+      summary: Get all email templates
+      responses:
+        '200':
+          description: All email templates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplatesResponse'
+    post:
+      summary: Create a new email template
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailTemplateRequest'
+      responses:
+        '201':
+          description: Email template created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplateResponse'
   /email-templates/{id}:
     put:
       summary: Update an email template
       parameters:
-        - name: id
+      - name: id
         in: path
         description: ID of the email template to update
         required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -956,21 +957,23 @@ paths:
               $ref: '#/components/schemas/EmailTemplateRequest'
       responses:
         '200':
-        description: Email template updated successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmailTemplateResponse'
+          description: Email template updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplateResponse'
     delete:
       summary: Delete an email template
       parameters:
-        - name: id
+      - name: id
         in: path
         description: ID of the email template to delete
         required: true
+        schema:
+          type: string
       responses:
         '200':
-        description: Email template deleted successfully
+          description: Email template deleted successfully
 
   #Activity Log
   /activity-logs:
@@ -979,11 +982,11 @@ paths:
       description: Get all activity logs
       responses:
         '200':
-        description: Activity logs retrieved successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ActivityLogResponse'
+          description: Activity logs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityLogResponse'
 
   #Push Notifications
   /push-notifications:
@@ -992,26 +995,26 @@ paths:
       description: Get all push notifications
       responses:
         '200':
-        description: Push notifications retrieved successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PushNotificationResponse'
+          description: Push notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushNotificationResponse'
     post:
       summary: Create a push notification
       description: Create a push notification
       requestBody:
         content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PushNotificationRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PushNotificationRequest'
       responses:
-      '200':
-      description: Push notification created successfully
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PushNotificationResponse'
+        '200':
+          description: Push notification created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushNotificationResponse'
 
 
 components:
@@ -1241,7 +1244,7 @@ components:
         value:
           type: string
 
-    
+
     # Contact Form
     ContactFormRequest:
       type: object
@@ -1423,7 +1426,7 @@ components:
           type: string
         region:
           type: string
-    
+
     # Email Templates
     EmailTemplatesResponse:
       type: object
@@ -1436,7 +1439,7 @@ components:
       type: object
       properties:
         template:
-        type: string
+          type: string
 
     #Activity Log
     ActivityLogResponse:
@@ -1451,15 +1454,15 @@ components:
     PushNotificationResponse:
       type: object
       properties:
-      pushNotification:
-        type: array
-        items:
-          type: string
+        pushNotification:
+          type: array
+          items:
+            type: string
     PushNotificationRequest:
       type: object
       properties:
-      pushNotification:
-        type: string
+        pushNotification:
+          type: string
 
 
 
@@ -1469,4 +1472,4 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-  
+
