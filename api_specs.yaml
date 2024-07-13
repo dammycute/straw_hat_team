@@ -904,7 +904,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
 
-
   # User Management
   /users:
     get:
@@ -1831,8 +1830,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
 
- 
-
   # Dashboard Data
   /dashboard:
     get:
@@ -1950,7 +1947,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MarketingPageResponse'
-  
 
   # Language and Region Settings
   /settings/language:
@@ -2077,7 +2073,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TemplateNotFoundError'
-        
+
   # Email Template Management
   /admin/email-templates:
     get:
@@ -2203,7 +2199,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TemplateNotFoundError'
-        
+
   # Activity Log
   /activity-logs:
     get:
@@ -2856,43 +2852,6 @@ components:
         body:
           type: string
 
-    # CreateEmailTemplateRequest:
-    #   type: object
-    #   properties:
-    #     name:
-    #       type: string
-    #     subject:
-    #       type: string
-    #     body:
-    #       type: string
-    # UpdateEmailTemplateRequest:
-    #   type: object
-    #   properties:
-    #     name:
-    #       type: string
-    #     subject:
-    #       type: string
-    #     body:
-    #       type: string
-    # EmailTemplateResponse:
-    #   type: object
-    #   properties:
-    #     id:
-    #       type: string
-    #     name:
-    #       type: string
-    #     subject:
-    #       type: string
-    #     body:
-    #       type: string
-    # EmailTemplateListResponse:
-    #   type: object
-    #   properties:
-    #     templates:
-    #       type: array
-    #       items:
-    #         $ref: '#/components/schemas/EmailTemplateResponse'
-
     # Settings
     CreateSettingsRequest:
       type: object
@@ -3283,7 +3242,6 @@ components:
                 type: string
                 example: 'Invite link not found.'
 
-
     # Waitlist
     CreateWaitlistRequest:
       type: object
@@ -3397,8 +3355,6 @@ components:
         chartData:
           type: object
 
-    
-
     # Blog
     CreateBlogPostRequest:
       type: object
@@ -3462,15 +3418,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EmailTemplateResponse'
-    CreateEmailTemplateRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        subject:
-          type: string
-        body:
-          type: string
+
     UpdateEmailTemplateRequest:
       type: object
       properties:
