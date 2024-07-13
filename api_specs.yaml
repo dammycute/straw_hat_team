@@ -669,9 +669,12 @@ paths:
                 type: string
 
   # Payments
-  /payments/stripe:
+
+  /payments/stripe/create:
     post:
-      summary: Process a Stripe payment
+      summary: Create a payment using Stripe
+      tags:
+        - Payments
       requestBody:
         content:
           application/json:
@@ -679,31 +682,304 @@ paths:
               $ref: '#/components/schemas/StripePaymentRequest'
       responses:
         '200':
-          description: Payment processed successfully
+          description: Payment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StripePaymentResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'The request was unacceptable, often due to missing a required parameter.'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'No valid API key provided.'
+        '402':
+          description: Request Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'The parameters were valid but the request failed.'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'The API key doesn’t have permissions to perform the request.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'The requested resource doesn’t exist.'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'The request conflicts with another request (perhaps due to using the same idempotent key).'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Something went wrong on Stripe’s end. (These are rare.)'
+        '502':
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Something went wrong on Stripe’s end. (These are rare.)'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Something went wrong on Stripe’s end. (These are rare.)'
+        '504':
+          description: Gateway Timeout
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Something went wrong on Stripe’s end. (These are rare.)'
 
-  /payments/flutterwave:
+  /payments/stripe/{id}:
+    get:
+      summary: Fetch a Stripe transaction
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the Stripe transaction to fetch
+      responses:
+        '200':
+          description: Transaction fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StripePaymentTransactionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /payments/stripe/cancel/{id}:
+    get:
+      summary: Cancel a previously created payout if its status is pending
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the Stripe transaction to fetch
+      responses:
+        '200':
+          description: Transaction cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentTransactionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /payments/flutterwave/create:
     post:
-      summary: Process a Flutterwave payment
+      summary: Create a transaction via Flutterwave
+      tags:
+        - Payments
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FlutterwavePaymentRequest'
+              $ref: '#/components/schemas/CreateFlutterwavePaymentRequest'
       responses:
         '200':
-          description: Payment processed successfully
+          description: Transaction created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlutterwaveTransactionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
-  /payments/lemonsqueezy:
-    post:
-      summary: Process a LemonSqueezy payment
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LemonSqueezyPaymentRequest'
+  /payments/flutterwave/{id}:
+    get:
+      summary: Fetch a transaction by ID from Flutterwave
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the transaction to fetch
       responses:
         '200':
-          description: Payment processed successfully
+          description: Transaction details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlutterTransactionDetails'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlutterwaveNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /payments/flutterwave/cancel/{id}:
+    get:
+      summary: Cancel a previously created payout if its status is pending
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the Flutterwave transaction to fetch
+      responses:
+        '200':
+          description: Transaction cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlutterCancelledTransactionDetails'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlutterwaveNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
   # Messaging
 
@@ -1046,7 +1322,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MarketingPageResponse'
-
 
   # Invite System
   /invites:
@@ -1958,7 +2233,7 @@ components:
           items:
             $ref: '#/components/schemas/WaitlistResponse'
 
-# Marketing Page
+    # Marketing Page
     CreateMarketingPageRequest:
       type: object
       properties:
