@@ -1,12 +1,12 @@
-# SaaS Platform API and Database Design
+# Straw Hat Team Comprehensive API and Database Design
 
 ## I. Introduction
 
 This document outlines the API and database design for a comprehensive SaaS platform. The platform includes features such as user authentication, organization management, payments, messaging, and various user-centric functionalities.
 
 Technology Stack:
-- Backend: [Your chosen backend framework, e.g., FastAPI, Django, Node.js]
-- Database: [Your chosen database, e.g., PostgreSQL, MySQL]
+- Backend: FastAPI
+- Database: [ PostgreSQL, MySQL]
 - API Documentation: OpenAPI 3.0.0
 
 ## II. API Design
