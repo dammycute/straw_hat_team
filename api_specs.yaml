@@ -1323,40 +1323,643 @@ paths:
               schema:
                 $ref: '#/components/schemas/MarketingPageResponse'
 
-  # Invite System
-  /invites:
+  # Invite Flow
+  /invite:
     post:
-      summary: Create an invite
+      summary: Invite a user
+      tags:
+        - Invite Flow
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateInviteRequest'
+              $ref: '#/components/schemas/InviteRequest'
       responses:
         '200':
-          description: Invite created successfully
-    get:
-      summary: List invites
-      responses:
-        '200':
-          description: A list of invites
+          description: Invitation sent successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InviteListResponse'
+                $ref: '#/components/schemas/InviteResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized - Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedEmailError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
-  /invites/{inviteId}/accept:
-    post:
-      summary: Accept an invite
+  /invite/{token}/accept:
+    get:
+      summary: Accept an invitation with a token
+      tags:
+        - Invite Flow
       parameters:
         - in: path
-          name: inviteId
+          name: token
           required: true
           schema:
             type: string
+          description: The invitation token to accept
       responses:
         '200':
-          description: Invite accepted successfully
+          description: Invitation accepted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteSuccessResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedTokenError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  # Export
+
+  /export:
+    get:
+      summary: Export user data
+      tags:
+        - User Data Management
+      responses:
+        '200':
+          description: Successful export
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized - Authentication failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericUnauthorizedError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  # Notifications
+
+  /notifications:
+    get:
+      summary: Get all notifications
+      tags:
+        - Notifications
+      responses:
+        '200':
+          description: Successful retrieval of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericUnauthorizedError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    post:
+      summary: Create a notification
+      tags:
+        - Notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationRequest'
+      responses:
+        '200':
+          description: Notification created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationCreateResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /notifications/{id}:
+    put:
+      summary: Update notification by ID
+      tags:
+        - Notifications
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the notification to update
+        - in: query
+          name: status
+          required: true
+          schema:
+            type: string
+          description: New status of the notification (e.g., read, unread)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Updated message content of the notification
+      responses:
+        '200':
+          description: Notification updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationUpdateResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Notification not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    delete:
+      summary: Delete a notification by ID
+      tags:
+        - Notifications
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the notification to delete
+      responses:
+        '200':
+          description: Notification deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Notification deleted successfully.'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    # Blog
+
+  /blogs:
+    get:
+      summary: Fetch all blogs
+      tags:
+        - Blog
+      responses:
+        '200':
+          description: Successful fetch
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlogsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    post:
+      summary: Create a new blog post
+      tags:
+        - Blog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlogPostRequest'
+      responses:
+        '201':
+          description: Blog post created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogPostResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '409':
+          description: Conflict - Blog post already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /blog/{id}:
+    get:
+      summary: Retrieve a single blog post
+      tags:
+        - Blog
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the blog post to retrieve
+      responses:
+        '200':
+          description: Blog post retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogPostResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Blog post not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      summary: Update a single blog post
+      tags:
+        - Blog
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the blog post to update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlogPostUpdateRequest'
+      responses:
+        '200':
+          description: Blog post updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogPostResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Blog post not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogNotFoundError'
+        '409':
+          description: Conflict - Input conflicts with existing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete a single blog post
+      tags:
+        - Blog
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the blog post to delete
+      responses:
+        '204':
+          description: Blog post deleted successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Blog post not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  # Invite Mgt
+  /invite-links:
+    get:
+      summary: Retrieve all invite links
+      tags:
+        - Invite Management
+      responses:
+        '200':
+          description: Successfully retrieved invite links
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteLinksResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericUnauthorizedError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      summary: Create a new invite link
+      tags:
+        - Invite Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInviteLinkRequest'
+      responses:
+        '201':
+          description: Successfully created invite link
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteLinkResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericUnauthorizedError'
+        '409':
+          description: Conflict - Invite link already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /invite-links/{id}:
+    get:
+      summary: Get an invite link by ID
+      tags:
+        - Invite Management
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the invite link to retrieve
+      responses:
+        '200':
+          description: Invite link retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleInviteLinkResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Invite link not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteLinkNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      summary: Update an invite link by ID
+      tags:
+        - Invite Management
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the invite link to update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInviteLinkRequest'
+      responses:
+        '200':
+          description: Invite link updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleInviteLinkResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Invite link not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteLinkNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete an invite link by ID
+      tags:
+        - Invite Management
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the invite link to delete
+      responses:
+        '204':
+          description: Invite link deleted successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Invite link not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteLinkNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
   # User Associated Data
   /user-data:
@@ -1462,31 +2065,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/ChartDataResponse'
 
-  # Notifications
-  /notifications:
-    get:
-      summary: List user notifications
-      responses:
-        '200':
-          description: A list of notifications
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotificationListResponse'
-    post:
-      summary: Create a new notification
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateNotificationRequest'
-      responses:
-        '200':
-          description: Notification created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotificationResponse'
+  # # Notifications
+  # /notifications:
+  #   get:
+  #     summary: List user notifications
+  #     responses:
+  #       '200':
+  #         description: A list of notifications
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/NotificationListResponse'
+  #   post:
+  #     summary: Create a new notification
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: '#/components/schemas/CreateNotificationRequest'
+  #     responses:
+  #       '200':
+  #         description: Notification created successfully
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/NotificationResponse'
 
   # Blog
   /blog:
@@ -1562,31 +2165,281 @@ paths:
         '204':
           description: Blog post deleted successfully
 
-  # Language and Region
-  /localization:
+  # Language and Region Settings
+  /settings/language:
     get:
-      summary: Get available languages and regions
+      tags:
+        - Language and Region Settings
+      summary: Get language settings
       responses:
         '200':
-          description: Available languages and regions
+          description: Language settings retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LocalizationResponse'
-    put:
-      summary: Update user's language and region preferences
+                $ref: '#/components/schemas/LanguageSettingsResponse'
+        '400':
+          description: Invalid request
+        '500':
+          description: Server error
+    post:
+      tags:
+        - Language and Region Settings
+      summary: Create language setting
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateLocalizationRequest'
+              $ref: '#/components/schemas/CreateLanguageSettingRequest'
       responses:
-        '200':
-          description: Localization preferences updated successfully
+        '201':
+          description: Language setting created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LocalizationResponse'
+                $ref: '#/components/schemas/LanguageSettingsResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+
+  /settings/language/{id}:
+    put:
+      tags:
+        - Language and Region Settings
+      summary: Update language setting
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLanguageSettingRequest'
+      responses:
+        '200':
+          description: Language setting updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LanguageSettingsResponse'
+        '400':
+          description: Invalid input
+        '404':
+          description: Language setting not found
+        '500':
+          description: Server error
+    delete:
+      tags:
+        - Language and Region Settings
+      summary: Delete language setting
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Language setting deleted successfully
+        '400':
+          description: Invalid request
+        '404':
+          description: Language setting not found
+        '500':
+          description: Server error
+
+  # Email Template Management
+  /admin/email-templates:
+    get:
+      tags:
+        - Email Template Management
+      summary: List email templates
+      responses:
+        '200':
+          description: Email templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplateListResponse'
+        '500':
+          description: Server error
+    post:
+      tags:
+        - Email Template Management
+      summary: Create email template
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEmailTemplateRequest'
+      responses:
+        '201':
+          description: Email template created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplateResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+
+  /admin/email-templates/{id}:
+    put:
+      tags:
+        - Email Template Management
+      summary: Update email template
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEmailTemplateRequest'
+      responses:
+        '200':
+          description: Email template updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplateResponse'
+        '400':
+          description: Invalid input
+        '404':
+          description: Email template not found
+        '500':
+          description: Server error
+
+    delete:
+      tags:
+        - Email Template Management
+      summary: Delete email template
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Email template deleted successfully
+        '400':
+          description: Invalid request
+        '404':
+          description: Email template not found
+        '500':
+          description: Server error
+
+  # Activity Log
+  /activity-logs:
+    get:
+      tags:
+        - Activity Log
+      summary: List activity logs
+      responses:
+        '200':
+          description: Activity logs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityLogListResponse'
+        '500':
+          description: Server error
+
+  # Push Notifications
+  /push-notifications:
+    get:
+      tags:
+        - Push Notifications
+      summary: List push notifications
+      responses:
+        '200':
+          description: Push notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushNotificationListResponse'
+        '500':
+          description: Server error
+
+    post:
+      tags:
+        - Push Notifications
+      summary: Create push notification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePushNotificationRequest'
+      responses:
+        '201':
+          description: Push notification created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushNotificationResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+
+  /push-notifications/{id}:
+    put:
+      tags:
+        - Push Notifications
+      summary: Update push notification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePushNotificationRequest'
+      responses:
+        '200':
+          description: Push notification updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushNotificationResponse'
+        '400':
+          description: Invalid input
+        '404':
+          description: Push notification not found
+        '500':
+          description: Server error
+
+    delete:
+      tags:
+        - Push Notifications
+      summary: Delete push notification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Push notification deleted successfully
+        '400':
+          description: Invalid request
+        '404':
+          description: Push notification not found
+        '500':
+          description: Server error
 
 components:
   schemas:
@@ -2030,20 +2883,6 @@ components:
                 type: string
                 example: '<p>Hello, welcome to our service!</p>'
 
-    CreateEmailTemplateRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        subject:
-          type: string
-        body:
-          type: string
-      required:
-        - name
-        - subject
-        - body
-
     CreateEmailTemplateResponse:
       type: object
       properties:
@@ -2087,43 +2926,6 @@ components:
           type: string
         body:
           type: string
-
-    # CreateEmailTemplateRequest:
-    #   type: object
-    #   properties:
-    #     name:
-    #       type: string
-    #     subject:
-    #       type: string
-    #     body:
-    #       type: string
-    # UpdateEmailTemplateRequest:
-    #   type: object
-    #   properties:
-    #     name:
-    #       type: string
-    #     subject:
-    #       type: string
-    #     body:
-    #       type: string
-    # EmailTemplateResponse:
-    #   type: object
-    #   properties:
-    #     id:
-    #       type: string
-    #     name:
-    #       type: string
-    #     subject:
-    #       type: string
-    #     body:
-    #       type: string
-    # EmailTemplateListResponse:
-    #   type: object
-    #   properties:
-    #     templates:
-    #       type: array
-    #       items:
-    #         $ref: '#/components/schemas/EmailTemplateResponse'
 
     # Settings
     CreateSettingsRequest:
@@ -2251,22 +3053,266 @@ components:
         content:
           type: string
 
-    # Invite System
-    CreateInviteRequest:
+    #Invite
+
+    InviteRequest:
       type: object
       properties:
         email:
           type: string
-        role:
-          type: string
-    InviteListResponse:
+          format: email
+
+    InviteResponse:
       type: object
       properties:
-        invites:
+        message:
+          type: string
+          example: 'Invite sent successfully.'
+
+    UnauthorizedEmailError:
+      type: object
+      properties:
+        errors:
           type: array
           items:
-            $ref: '#/components/schemas/InviteResponse'
-    InviteResponse:
+            type: object
+            properties:
+              field:
+                type: string
+                example: email
+              message:
+                type: string
+                example: 'Invalid credentials.'
+
+    UnauthorizedTokenError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: token
+              message:
+                type: string
+                example: 'Invalid credentials.'
+
+    InviteSuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Invitation accepted successfully
+
+    # User Data Management
+
+    ExportResponse:
+      type: object
+      properties:
+        downloadUrl:
+          type: string
+          format: uri
+          example: https://example.com/export/download/data.zip
+
+    GenericUnauthorizedError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: field_name
+              message:
+                type: string
+                example: 'Unauthorized error message.'
+
+    # notifications
+
+    NotificationResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        message:
+          type: string
+          example: Notification message content
+        createdAt:
+          type: string
+          format: date-time
+          example: '2024-07-15T10:30:00Z'
+
+    NotificationRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        message:
+          type: string
+
+    NotificationCreateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1a2b3c4d5e6f7g8h9i0j
+        message:
+          type: string
+          example: 'Notification message'
+
+    NotificationUpdateResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        message:
+          type: string
+          example: You have a new message
+        status:
+          type: string
+          example: read
+
+    NotificationNotFoundError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: notification_id
+              message:
+                type: string
+                example: 'Notification not found.'
+
+    # Blog
+
+    BlogsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1a2b3c4d5e6f7g8h9i0j
+        author:
+          type: string
+          example: John Doe
+        title:
+          type: string
+          example: My First Blog
+        textContent:
+          type: string
+          example: This is the content of my first blog.
+        imageContent:
+          type: string
+          example: image_url.jpg
+        created_at:
+          type: string
+          format: date-time
+          example: 2024-07-13T14:20:00Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2024-07-13T15:30:00Z
+
+    BlogPostRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        textContent:
+          type: string
+        imageContent:
+          type: string
+        authorId:
+          type: string
+
+    BlogPostResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        textContent:
+          type: string
+        imageContent:
+          type: string
+        authorId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    BlogNotFoundError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: id
+              message:
+                type: string
+                example: 'Blog post not found.'
+
+    BlogPostUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        textContent:
+          type: string
+        imageContent:
+          type: string
+
+    # Invite Mgt
+
+    InviteLinksResponse:
+      type: object
+      properties:
+        inviteLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/InviteLink'
+    CreateInviteLinkRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        role:
+          type: string
+          example: admin
+    InviteLinkResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1a2b3c4d5e6f7g8h9i0j
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        role:
+          type: string
+          example: admin
+        token:
+          type: string
+          example: abcdef123456
+    InviteLink:
       type: object
       properties:
         id:
@@ -2275,6 +3321,41 @@ components:
           type: string
         role:
           type: string
+        token:
+          type: string
+    SingleInviteLinkResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        link:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+    UpdateInviteLinkRequest:
+      type: object
+      properties:
+        expiresAt:
+          type: string
+          format: date-time
+    InviteLinkNotFoundError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: id
+              message:
+                type: string
+                example: 'Invite link not found.'
 
     # User Associated Data
     CreateUserDataRequest:
@@ -2324,81 +3405,105 @@ components:
         chartData:
           type: object
 
-    # Notifications
-    CreateNotificationRequest:
-      type: object
-      properties:
-        title:
-          type: string
-        message:
-          type: string
-    NotificationResponse:
+    LanguageSettingsResponse:
       type: object
       properties:
         id:
           type: string
-        title:
+        language:
           type: string
-        message:
+        region:
           type: string
-    NotificationListResponse:
-      type: object
-      properties:
-        notifications:
-          type: array
-          items:
-            $ref: '#/components/schemas/NotificationResponse'
-
-    # Blog
-    CreateBlogPostRequest:
-      type: object
-      properties:
-        title:
-          type: string
-        content:
-          type: string
-    UpdateBlogPostRequest:
-      type: object
-      properties:
-        title:
-          type: string
-        content:
-          type: string
-    BlogPostResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        content:
-          type: string
-    BlogPostListResponse:
-      type: object
-      properties:
-        posts:
-          type: array
-          items:
-            $ref: '#/components/schemas/BlogPostResponse'
-
-    # Language and Region
-    LocalizationResponse:
-      type: object
-      properties:
-        languages:
-          type: array
-          items:
-            type: string
-        regions:
-          type: array
-          items:
-            type: string
-    UpdateLocalizationRequest:
+    CreateLanguageSettingRequest:
       type: object
       properties:
         language:
           type: string
         region:
+          type: string
+    UpdateLanguageSettingRequest:
+      type: object
+      properties:
+        language:
+          type: string
+        region:
+          type: string
+
+    EmailTemplateListResponse:
+      type: object
+      properties:
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailTemplateResponse'
+
+    CreateEmailTemplateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+    UpdateEmailTemplateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+    EmailTemplateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+
+    ActivityLogListResponse:
+      type: object
+      properties:
+        logs:
+          type: array
+          items:
+            type: object
+
+    PushNotificationListResponse:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/PushNotificationResponse'
+    CreatePushNotificationRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        message:
+          type: string
+    UpdatePushNotificationRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        message:
+          type: string
+    PushNotificationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        message:
           type: string
 
   securitySchemes:
