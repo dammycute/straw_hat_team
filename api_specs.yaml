@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: Comprehensive SaaS Platform API
-  version: 2.0.0
-  description: API for a full-featured SaaS platform including authentication, payments, user management, and more.
+  title: Straw Hat Team Comprehensive API
+  version: 1.0.0
+  description: API for a full-featured Product/SaaS platform including authentication, payments, user management, and more.
 
 paths:
   # Authentication
@@ -706,90 +706,215 @@ paths:
           description: Payment processed successfully
 
   # Messaging
-  /messages/email:
+
+  /email/send:
     post:
-      summary: Send an email
+      summary: Send an email using a predefined template
+      tags:
+        - Messaging
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmailRequest'
+              $ref: '#/components/schemas/SendEmailRequest'
       responses:
         '200':
           description: Email sent successfully
-
-  /messages/templates:
-    get:
-      summary: List email templates
-      responses:
-        '200':
-          description: A list of email templates
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmailTemplateListResponse'
+                $ref: '#/components/schemas/SendEmailResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '409':
+          description: Conflict - Input conflict error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateConflictError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /email/templates:
+    get:
+      summary: Get all email templates
+      tags:
+        - Messaging
+      responses:
+        '200':
+          description: Successful retrieval of email templates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplatesResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     post:
       summary: Create a new email template
+      tags:
+        - Messaging
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateEmailTemplateRequest'
       responses:
-        '200':
+        '201':
           description: Email template created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmailTemplateResponse'
-
-  /messages/templates/{templateId}:
-    get:
-      summary: Get email template details
-      parameters:
-        - in: path
-          name: templateId
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Email template details
+                $ref: '#/components/schemas/CreateEmailTemplateResponse'
+        '400':
+          description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmailTemplateResponse'
-    put:
-      summary: Update email template
+                $ref: '#/components/schemas/BadRequestError'
+        '409':
+          description: Input conflict error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /email/templates/{id}:
+    get:
+      summary: Get an email template by ID
+      tags:
+        - Messaging
       parameters:
         - in: path
-          name: templateId
+          name: id
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
+          description: The ID of the email template
+      responses:
+        '200':
+          description: Successful retrieval of email template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplate'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      summary: Update an email template by ID
+      tags:
+        - Messaging
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: The ID of the email template
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateEmailTemplateRequest'
+              $ref: '#/components/schemas/EmailTemplateUpdateRequest'
       responses:
         '200':
-          description: Email template updated successfully
+          description: Successful update of email template
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmailTemplateResponse'
+                $ref: '#/components/schemas/EmailTemplate'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     delete:
-      summary: Delete an email template
+      summary: Delete an email template by ID
+      tags:
+        - Messaging
       parameters:
         - in: path
-          name: templateId
+          name: id
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
+          description: The ID of the email template
       responses:
         '204':
-          description: Email template deleted successfully
+          description: Successful deletion of email template
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
   # GDPR
   /gdpr/consent:
@@ -804,122 +929,30 @@ paths:
         '200':
           description: Consent recorded successfully
 
+  # Dashboard Data
   /dashboard:
     get:
       summary: Get dashboard data
-      tags:
-        - Dashboard
       responses:
         '200':
           description: Dashboard data
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DashboardResponse'
-  /dashboard/widgets:
-    get:
-      summary: List dashboard widgets
-      tags:
-        - Dashboard
-      responses:
-        '200':
-          description: List of dashboard widgets
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WidgetListResponse'
-  /dashboard/widgets/{id}:
-    get:
-      summary: Get widget details
-      tags:
-        - Dashboard
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Widget details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WidgetResponse'
+                $ref: '#/components/schemas/DashboardDataResponse'
 
-  # Waitlist Management
+  # Waitlist
   /waitlist:
-    get:
-      summary: List waitlist entries
-      tags:
-        - Waitlist
-      responses:
-        '200':
-          description: List of waitlist entries
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WaitlistListResponse'
     post:
-      summary: Create a new waitlist entry
-      tags:
-        - Waitlist
+      summary: Join the waitlist
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateWaitlistRequest'
-      responses:
-        '201':
-          description: Waitlist entry created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WaitlistResponse'
-  /waitlist/{id}:
-    delete:
-      summary: Delete a waitlist entry
-      tags:
-        - Waitlist
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: Waitlist entry deleted successfully
-
-  # Marketing Page
-  /squeeze:
-    get:
-      summary: Get marketing page content
-      tags:
-        - Marketing Page
+              $ref: '#/components/schemas/WaitlistRequest'
       responses:
         '200':
-          description: Marketing page content
-          content:
-            text/html:
-              schema:
-                type: string
-    post:
-      summary: Create marketing page content
-      tags:
-        - Marketing Page
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateMarketingPageRequest'
-      responses:
-        '201':
-          description: Marketing page content created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MarketingPageResponse'
+          description: Successfully joined the waitlist
 
   # Invite System
   /invites:
@@ -1185,105 +1218,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LocalizationResponse'
-                
-  #Email Templates
-  /email-templates:
-  get:
-    summary: Get all email templates
-    responses:
-      '200':
-      description: All email templates
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/EmailTemplatesResponse'
-  post:
-    summary: Create a new email template
-    requestBody:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/EmailTemplateRequest'
-    responses:
-      '201':
-      description: Email template created successfully
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/EmailTemplateResponse'
-
-  /email-templates/{id}:
-    put:
-      summary: Update an email template
-      parameters:
-        - name: id
-        in: path
-        description: ID of the email template to update
-        required: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmailTemplateRequest'
-      responses:
-        '200':
-        description: Email template updated successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmailTemplateResponse'
-    delete:
-      summary: Delete an email template
-      parameters:
-        - name: id
-        in: path
-        description: ID of the email template to delete
-        required: true
-      responses:
-        '200':
-        description: Email template deleted successfully
-
-  #Activity Log
-  /activity-logs:
-    get:
-      summary: Get all activity logs
-      description: Get all activity logs
-      responses:
-        '200':
-        description: Activity logs retrieved successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ActivityLogResponse'
-
-  #Push Notifications
-  /push-notifications:
-    get:
-      summary: Get all push notifications
-      description: Get all push notifications
-      responses:
-        '200':
-        description: Push notifications retrieved successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PushNotificationResponse'
-    post:
-      summary: Create a push notification
-      description: Create a push notification
-      requestBody:
-        content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PushNotificationRequest'
-      responses:
-      '200':
-      description: Push notification created successfully
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PushNotificationResponse'
-
 
 components:
   schemas:
@@ -1302,6 +1236,7 @@ components:
               message:
                 type: string
                 example: 'Error message for bad request.'
+
     InputConflictError:
       type: object
       properties:
@@ -1316,6 +1251,36 @@ components:
               message:
                 type: string
                 example: 'User with email address already exists.'
+
+    ConflictError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: field_name
+              message:
+                type: string
+                example: 'Conflict error message.'
+
+    TemplateConflictError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: templateId
+              message:
+                type: string
+                example: 'Template ID conflict.'
 
     NotFoundError:
       type: object
@@ -1332,6 +1297,21 @@ components:
                 type: string
                 example: 'Email not found.'
 
+    TemplateNotFoundError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: resource_id
+              message:
+                type: string
+                example: 'Resource not found.'
+
     InternalServerError:
       type: object
       properties:
@@ -1346,6 +1326,7 @@ components:
               message:
                 type: string
                 example: 'Internal server error.'
+
     UnauthorizedError:
       type: object
       properties:
@@ -1360,6 +1341,7 @@ components:
               message:
                 type: string
                 example: 'Invalid credentials.'
+
     MagicLinkUnauthorizedError:
       type: object
       properties:
@@ -1374,6 +1356,7 @@ components:
               message:
                 type: string
                 example: 'Invalid Verifcation Token.'
+
     PasswordResetUnauthorizedError:
       type: object
       properties:
@@ -1629,15 +1612,55 @@ components:
           type: string
 
     # Messaging
-    EmailRequest:
+
+    SendEmailRequest:
       type: object
       properties:
-        to:
+        recipient:
           type: string
+          example: user@example.com
         subject:
           type: string
-        body:
+          example: 'Welcome to Our Service'
+        templateId:
+          type: integer
+          example: 1
+        data:
+          type: object
+          additionalProperties:
+            type: string
+
+    SendEmailResponse:
+      type: object
+      properties:
+        messageId:
           type: string
+          example: '1234567890abcdef'
+        status:
+          type: string
+          example: 'Message sent successfully'
+
+    EmailTemplatesResponse:
+      type: object
+      properties:
+        templates:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: 'Welcome Email'
+              subject:
+                type: string
+                example: 'Welcome to Our Service'
+              body:
+                type: string
+                example: '<p>Hello, welcome to our service!</p>'
+
     CreateEmailTemplateRequest:
       type: object
       properties:
@@ -1647,16 +1670,12 @@ components:
           type: string
         body:
           type: string
-    UpdateEmailTemplateRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        subject:
-          type: string
-        body:
-          type: string
-    EmailTemplateResponse:
+      required:
+        - name
+        - subject
+        - body
+
+    CreateEmailTemplateResponse:
       type: object
       properties:
         id:
@@ -1667,13 +1686,75 @@ components:
           type: string
         body:
           type: string
-    EmailTemplateListResponse:
+        created_at:
+          type: string
+          format: date-time
+
+    EmailTemplate:
       type: object
       properties:
-        templates:
-          type: array
-          items:
-            $ref: '#/components/schemas/EmailTemplateResponse'
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    EmailTemplateUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+
+    # CreateEmailTemplateRequest:
+    #   type: object
+    #   properties:
+    #     name:
+    #       type: string
+    #     subject:
+    #       type: string
+    #     body:
+    #       type: string
+    # UpdateEmailTemplateRequest:
+    #   type: object
+    #   properties:
+    #     name:
+    #       type: string
+    #     subject:
+    #       type: string
+    #     body:
+    #       type: string
+    # EmailTemplateResponse:
+    #   type: object
+    #   properties:
+    #     id:
+    #       type: string
+    #     name:
+    #       type: string
+    #     subject:
+    #       type: string
+    #     body:
+    #       type: string
+    # EmailTemplateListResponse:
+    #   type: object
+    #   properties:
+    #     templates:
+    #       type: array
+    #       items:
+    #         $ref: '#/components/schemas/EmailTemplateResponse'
 
     # Settings
     CreateSettingsRequest:
@@ -1734,73 +1815,18 @@ components:
         consent:
           type: string
 
-    components:
-  schemas:
-    # Dashboard
-    DashboardResponse:
+    # Dashboard Data
+    DashboardDataResponse:
       type: object
       properties:
-        widgets:
-          type: array
-          items:
-            $ref: '#/components/schemas/WidgetResponse'
-    WidgetListResponse:
-      type: object
-      properties:
-        widgets:
-          type: array
-          items:
-            $ref: '#/components/schemas/WidgetResponse'
-    WidgetResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
         data:
           type: object
 
     # Waitlist
-    CreateWaitlistRequest:
+    WaitlistRequest:
       type: object
       properties:
         email:
-          type: string
-          format: email
-    WaitlistResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        email:
-          type: string
-    WaitlistListResponse:
-      type: object
-      properties:
-        waitlist:
-          type: array
-          items:
-            $ref: '#/components/schemas/WaitlistResponse'
-
-    # Marketing Page
-    CreateMarketingPageRequest:
-      type: object
-      properties:
-        title:
-          type: string
-        content:
-          type: string
-    MarketingPageResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        content:
           type: string
 
     # Invite System
@@ -1933,8 +1959,6 @@ components:
           items:
             $ref: '#/components/schemas/BlogPostResponse'
 
-
-
     # Language and Region
     LocalizationResponse:
       type: object
@@ -1954,46 +1978,6 @@ components:
           type: string
         region:
           type: string
-    
-    # Email Templates
-    EmailTemplatesResponse:
-      type: object
-      properties:
-        templates:
-          type: array
-          items:
-            type: string
-    EmailTemplateRequest:
-      type: object
-      properties:
-        template:
-        type: string
-
-    #Activity Log
-    ActivityLogResponse:
-      type: object
-      properties:
-        activityLog:
-          type: array
-          items:
-            type: string
-
-    #Push Notification
-    PushNotificationResponse:
-      type: object
-      properties:
-      pushNotification:
-        type: array
-        items:
-          type: string
-    PushNotificationRequest:
-      type: object
-      properties:
-      pushNotification:
-        type: string
-
-
-
 
   securitySchemes:
     bearerAuth:
