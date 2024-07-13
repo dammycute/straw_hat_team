@@ -70,7 +70,7 @@ Our database is designed to support all the features of the SaaS platform effici
 13. notifications
 14. blog_posts
 15. activity_logs
-<!-- 16. content_page -->
+16. emails
 
 
 ### Entity Relationship Diagram:
