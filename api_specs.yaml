@@ -706,90 +706,215 @@ paths:
           description: Payment processed successfully
 
   # Messaging
-  /messages/email:
+
+  /email/send:
     post:
-      summary: Send an email
+      summary: Send an email using a predefined template
+      tags:
+        - Messaging
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmailRequest'
+              $ref: '#/components/schemas/SendEmailRequest'
       responses:
         '200':
           description: Email sent successfully
-
-  /messages/templates:
-    get:
-      summary: List email templates
-      responses:
-        '200':
-          description: A list of email templates
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmailTemplateListResponse'
+                $ref: '#/components/schemas/SendEmailResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '409':
+          description: Conflict - Input conflict error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateConflictError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /email/templates:
+    get:
+      summary: Get all email templates
+      tags:
+        - Messaging
+      responses:
+        '200':
+          description: Successful retrieval of email templates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplatesResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     post:
       summary: Create a new email template
+      tags:
+        - Messaging
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateEmailTemplateRequest'
       responses:
-        '200':
+        '201':
           description: Email template created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmailTemplateResponse'
-
-  /messages/templates/{templateId}:
-    get:
-      summary: Get email template details
-      parameters:
-        - in: path
-          name: templateId
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Email template details
+                $ref: '#/components/schemas/CreateEmailTemplateResponse'
+        '400':
+          description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmailTemplateResponse'
-    put:
-      summary: Update email template
+                $ref: '#/components/schemas/BadRequestError'
+        '409':
+          description: Input conflict error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /email/templates/{id}:
+    get:
+      summary: Get an email template by ID
+      tags:
+        - Messaging
       parameters:
         - in: path
-          name: templateId
+          name: id
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
+          description: The ID of the email template
+      responses:
+        '200':
+          description: Successful retrieval of email template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplate'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      summary: Update an email template by ID
+      tags:
+        - Messaging
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: The ID of the email template
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateEmailTemplateRequest'
+              $ref: '#/components/schemas/EmailTemplateUpdateRequest'
       responses:
         '200':
-          description: Email template updated successfully
+          description: Successful update of email template
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmailTemplateResponse'
+                $ref: '#/components/schemas/EmailTemplate'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     delete:
-      summary: Delete an email template
+      summary: Delete an email template by ID
+      tags:
+        - Messaging
       parameters:
         - in: path
-          name: templateId
+          name: id
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
+          description: The ID of the email template
       responses:
         '204':
-          description: Email template deleted successfully
+          description: Successful deletion of email template
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateNotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
   # GDPR
   /gdpr/consent:
@@ -1111,6 +1236,7 @@ components:
               message:
                 type: string
                 example: 'Error message for bad request.'
+
     InputConflictError:
       type: object
       properties:
@@ -1125,6 +1251,36 @@ components:
               message:
                 type: string
                 example: 'User with email address already exists.'
+
+    ConflictError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: field_name
+              message:
+                type: string
+                example: 'Conflict error message.'
+
+    TemplateConflictError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: templateId
+              message:
+                type: string
+                example: 'Template ID conflict.'
 
     NotFoundError:
       type: object
@@ -1141,6 +1297,21 @@ components:
                 type: string
                 example: 'Email not found.'
 
+    TemplateNotFoundError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: resource_id
+              message:
+                type: string
+                example: 'Resource not found.'
+
     InternalServerError:
       type: object
       properties:
@@ -1155,6 +1326,7 @@ components:
               message:
                 type: string
                 example: 'Internal server error.'
+
     UnauthorizedError:
       type: object
       properties:
@@ -1169,6 +1341,7 @@ components:
               message:
                 type: string
                 example: 'Invalid credentials.'
+
     MagicLinkUnauthorizedError:
       type: object
       properties:
@@ -1183,6 +1356,7 @@ components:
               message:
                 type: string
                 example: 'Invalid Verifcation Token.'
+
     PasswordResetUnauthorizedError:
       type: object
       properties:
@@ -1438,15 +1612,55 @@ components:
           type: string
 
     # Messaging
-    EmailRequest:
+
+    SendEmailRequest:
       type: object
       properties:
-        to:
+        recipient:
           type: string
+          example: user@example.com
         subject:
           type: string
-        body:
+          example: 'Welcome to Our Service'
+        templateId:
+          type: integer
+          example: 1
+        data:
+          type: object
+          additionalProperties:
+            type: string
+
+    SendEmailResponse:
+      type: object
+      properties:
+        messageId:
           type: string
+          example: '1234567890abcdef'
+        status:
+          type: string
+          example: 'Message sent successfully'
+
+    EmailTemplatesResponse:
+      type: object
+      properties:
+        templates:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: 'Welcome Email'
+              subject:
+                type: string
+                example: 'Welcome to Our Service'
+              body:
+                type: string
+                example: '<p>Hello, welcome to our service!</p>'
+
     CreateEmailTemplateRequest:
       type: object
       properties:
@@ -1456,16 +1670,12 @@ components:
           type: string
         body:
           type: string
-    UpdateEmailTemplateRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        subject:
-          type: string
-        body:
-          type: string
-    EmailTemplateResponse:
+      required:
+        - name
+        - subject
+        - body
+
+    CreateEmailTemplateResponse:
       type: object
       properties:
         id:
@@ -1476,13 +1686,38 @@ components:
           type: string
         body:
           type: string
-    EmailTemplateListResponse:
+        created_at:
+          type: string
+          format: date-time
+
+    EmailTemplate:
       type: object
       properties:
-        templates:
-          type: array
-          items:
-            $ref: '#/components/schemas/EmailTemplateResponse'
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    EmailTemplateUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
 
     # Settings
     CreateSettingsRequest:
