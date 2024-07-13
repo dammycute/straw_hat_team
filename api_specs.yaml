@@ -1093,31 +1093,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/ChartDataResponse'
 
-  # Notifications
-  /notifications:
-    get:
-      summary: List user notifications
-      responses:
-        '200':
-          description: A list of notifications
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotificationListResponse'
-    post:
-      summary: Create a new notification
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateNotificationRequest'
-      responses:
-        '200':
-          description: Notification created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotificationResponse'
+  # # Notifications
+  # /notifications:
+  #   get:
+  #     summary: List user notifications
+  #     responses:
+  #       '200':
+  #         description: A list of notifications
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/NotificationListResponse'
+  #   post:
+  #     summary: Create a new notification
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: '#/components/schemas/CreateNotificationRequest'
+  #     responses:
+  #       '200':
+  #         description: Notification created successfully
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/NotificationResponse'
 
   # Blog
   /blog:
@@ -1193,31 +1193,285 @@ paths:
         '204':
           description: Blog post deleted successfully
 
-  # Language and Region
-  /localization:
+  
+
+  # Language and Region Settings
+  /settings/language:
     get:
-      summary: Get available languages and regions
+      tags:
+        - Language and Region Settings
+      summary: Get language settings
       responses:
         '200':
-          description: Available languages and regions
+          description: Language settings retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LocalizationResponse'
-    put:
-      summary: Update user's language and region preferences
+                $ref: '#/components/schemas/LanguageSettingsResponse'
+        '400':
+          description: Invalid request
+        '500':
+          description: Server error
+    post:
+      tags:
+        - Language and Region Settings
+      summary: Create language setting
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateLocalizationRequest'
+              $ref: '#/components/schemas/CreateLanguageSettingRequest'
       responses:
-        '200':
-          description: Localization preferences updated successfully
+        '201':
+          description: Language setting created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LocalizationResponse'
+                $ref: '#/components/schemas/LanguageSettingsResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+
+  /settings/language/{id}:
+    put:
+      tags:
+        - Language and Region Settings
+      summary: Update language setting
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLanguageSettingRequest'
+      responses:
+        '200':
+          description: Language setting updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LanguageSettingsResponse'
+        '400':
+          description: Invalid input
+        '404':
+          description: Language setting not found
+        '500':
+          description: Server error
+    delete:
+      tags:
+        - Language and Region Settings
+      summary: Delete language setting
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Language setting deleted successfully
+        '400':
+          description: Invalid request
+        '404':
+          description: Language setting not found
+        '500':
+          description: Server error
+
+  # Email Template Management
+  /admin/email-templates:
+    get:
+      tags:
+        - Email Template Management
+      summary: List email templates
+      responses:
+        '200':
+          description: Email templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplateListResponse'
+        '500':
+          description: Server error
+    post:
+      tags:
+        - Email Template Management
+      summary: Create email template
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEmailTemplateRequest'
+      responses:
+        '201':
+          description: Email template created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplateResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+
+  /admin/email-templates/{id}:
+    put:
+      tags:
+        - Email Template Management
+      summary: Update email template
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEmailTemplateRequest'
+      responses:
+        '200':
+          description: Email template updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplateResponse'
+        '400':
+          description: Invalid input
+        '404':
+          description: Email template not found
+        '500':
+          description: Server error
+
+    delete:
+      tags:
+        - Email Template Management
+      summary: Delete email template
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Email template deleted successfully
+        '400':
+          description: Invalid request
+        '404':
+          description: Email template not found
+        '500':
+          description: Server error
+
+
+  # Activity Log
+  /activity-logs:
+    get:
+      tags:
+        - Activity Log
+      summary: List activity logs
+      responses:
+        '200':
+          description: Activity logs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityLogListResponse'
+        '500':
+          description: Server error
+
+
+  # Push Notifications
+  /push-notifications:
+    get:
+      tags:
+        - Push Notifications
+      summary: List push notifications
+      responses:
+        '200':
+          description: Push notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushNotificationListResponse'
+        '500':
+          description: Server error
+
+    post:
+      tags:
+        - Push Notifications
+      summary: Create push notification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePushNotificationRequest'
+      responses:
+        '201':
+          description: Push notification created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushNotificationResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+
+  /push-notifications/{id}:
+    put:
+      tags:
+        - Push Notifications
+      summary: Update push notification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePushNotificationRequest'
+      responses:
+        '200':
+          description: Push notification updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushNotificationResponse'
+        '400':
+          description: Invalid input
+        '404':
+          description: Push notification not found
+        '500':
+          description: Server error
+
+    delete:
+      tags:
+        - Push Notifications
+      summary: Delete push notification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Push notification deleted successfully
+        '400':
+          description: Invalid request
+        '404':
+          description: Push notification not found
+        '500':
+          description: Server error
 
 components:
   schemas:
@@ -1902,30 +2156,7 @@ components:
         chartData:
           type: object
 
-    # Notifications
-    CreateNotificationRequest:
-      type: object
-      properties:
-        title:
-          type: string
-        message:
-          type: string
-    NotificationResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        message:
-          type: string
-    NotificationListResponse:
-      type: object
-      properties:
-        notifications:
-          type: array
-          items:
-            $ref: '#/components/schemas/NotificationResponse'
+    
 
     # Blog
     CreateBlogPostRequest:
@@ -1959,24 +2190,104 @@ components:
           items:
             $ref: '#/components/schemas/BlogPostResponse'
 
-    # Language and Region
-    LocalizationResponse:
+    LanguageSettingsResponse:
       type: object
       properties:
-        languages:
-          type: array
-          items:
-            type: string
-        regions:
-          type: array
-          items:
-            type: string
-    UpdateLocalizationRequest:
+        id:
+          type: string
+        language:
+          type: string
+        region:
+          type: string
+    CreateLanguageSettingRequest:
       type: object
       properties:
         language:
           type: string
         region:
+          type: string
+    UpdateLanguageSettingRequest:
+      type: object
+      properties:
+        language:
+          type: string
+        region:
+          type: string
+
+    EmailTemplateListResponse:
+      type: object
+      properties:
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailTemplateResponse'
+    CreateEmailTemplateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+    UpdateEmailTemplateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+    EmailTemplateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+
+    ActivityLogListResponse:
+      type: object
+      properties:
+        logs:
+          type: array
+          items:
+            type: object
+
+    PushNotificationListResponse:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/PushNotificationResponse'
+    CreatePushNotificationRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        message:
+          type: string
+    UpdatePushNotificationRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        message:
+          type: string
+    PushNotificationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        message:
           type: string
 
   securitySchemes:
