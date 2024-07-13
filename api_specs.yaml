@@ -1203,41 +1203,56 @@ paths:
       summary: Get language settings
       responses:
         '200':
-          description: Language settings retrieved successfully
+          description: Language settings details
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LanguageSettingsResponse'
         '400':
-          description: Invalid request
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     post:
       tags:
         - Language and Region Settings
-      summary: Create language setting
+      summary: Create language settings
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateLanguageSettingRequest'
+              $ref: '#/components/schemas/CreateLanguageSettingsRequest'
       responses:
         '201':
-          description: Language setting created successfully
+          description: Language settings created successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LanguageSettingsResponse'
         '400':
-          description: Invalid input
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
-
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /settings/language/{id}:
     put:
       tags:
         - Language and Region Settings
-      summary: Update language setting
+      summary: Update language settings
       parameters:
         - name: id
           in: path
@@ -1248,24 +1263,36 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateLanguageSettingRequest'
+              $ref: '#/components/schemas/UpdateLanguageSettingsRequest'
       responses:
         '200':
-          description: Language setting updated successfully
+          description: Language settings updated successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LanguageSettingsResponse'
         '400':
-          description: Invalid input
-        '404':
-          description: Language setting not found
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateNotFoundError'
     delete:
       tags:
         - Language and Region Settings
-      summary: Delete language setting
+      summary: Delete language settings
       parameters:
         - name: id
           in: path
@@ -1274,14 +1301,26 @@ paths:
             type: string
       responses:
         '204':
-          description: Language setting deleted successfully
+          description: Language settings deleted successfully
         '400':
-          description: Invalid request
-        '404':
-          description: Language setting not found
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
-
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateNotFoundError'
+        
   # Email Template Management
   /admin/email-templates:
     get:
@@ -1290,17 +1329,27 @@ paths:
       summary: List email templates
       responses:
         '200':
-          description: Email templates retrieved successfully
+          description: A list of email templates
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmailTemplateListResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     post:
       tags:
         - Email Template Management
-      summary: Create email template
+      summary: Create a new email template
       requestBody:
         content:
           application/json:
@@ -1314,10 +1363,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmailTemplateResponse'
         '400':
-          description: Invalid input
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
-
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /admin/email-templates/{id}:
     put:
       tags:
@@ -1342,12 +1398,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmailTemplateResponse'
         '400':
-          description: Invalid input
-        '404':
-          description: Email template not found
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
-
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateNotFoundError'
     delete:
       tags:
         - Email Template Management
@@ -1362,50 +1429,79 @@ paths:
         '204':
           description: Email template deleted successfully
         '400':
-          description: Invalid request
-        '404':
-          description: Email template not found
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
-
-
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateNotFoundError'
+        
   # Activity Log
   /activity-logs:
     get:
       tags:
         - Activity Log
-      summary: List activity logs
+      summary: List all activity logs
       responses:
         '200':
-          description: Activity logs retrieved successfully
+          description: A list of activity logs
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActivityLogListResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
-
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
   # Push Notifications
   /push-notifications:
     get:
       tags:
         - Push Notifications
-      summary: List push notifications
+      summary: List all push notifications
       responses:
         '200':
-          description: Push notifications retrieved successfully
+          description: A list of push notifications
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PushNotificationListResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
-
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     post:
       tags:
         - Push Notifications
-      summary: Create push notification
+      summary: Create a new push notification
       requestBody:
         content:
           application/json:
@@ -1419,10 +1515,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/PushNotificationResponse'
         '400':
-          description: Invalid input
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
-
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /push-notifications/{id}:
     put:
       tags:
@@ -1447,12 +1550,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/PushNotificationResponse'
         '400':
-          description: Invalid input
-        '404':
-          description: Push notification not found
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
-
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateNotFoundError'
     delete:
       tags:
         - Push Notifications
@@ -1467,11 +1581,23 @@ paths:
         '204':
           description: Push notification deleted successfully
         '400':
-          description: Invalid request
-        '404':
-          description: Push notification not found
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         '500':
-          description: Server error
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateNotFoundError'
 
 components:
   schemas:

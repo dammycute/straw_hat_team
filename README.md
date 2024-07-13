@@ -6,7 +6,7 @@ This document outlines the API and database design for a comprehensive SaaS plat
 
 Technology Stack:
 - Backend: FastAPI
-- Database: [ PostgreSQL, MySQL]
+- Database: [  PostgreSQL, MySQL]
 - API Documentation: OpenAPI 3.0.0
 
 ## II. API Design
@@ -65,17 +65,17 @@ Our database is designed to support all the features of the SaaS platform effici
 9. user_settings
 10. content_pages
 11. invites
-12. user_data
-13. waitlist_entries
-14. notifications
-15. blog_posts
-16. activity_logs
+<!-- 12. user_data -->
+12. waitlist_entries
+13. notifications
+14. blog_posts
+15. activity_logs
+<!-- 16. content_page -->
 
-[Full SQL Schema](link-to-your-sql-schema-file)
 
 ### Entity Relationship Diagram:
 
-[Link to your ERD image or diagram]
+[Link to your ERD image or diagram] (https://res.cloudinary.com/dvtbcxaqt/image/upload/v1720905845/nnnjpg_vej21q.jpg)
 
 ## IV. Implementation Details
 
