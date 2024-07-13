@@ -15,7 +15,7 @@ Our API is designed using OpenAPI 3.0.0 specification. It provides a comprehensi
 
 ### Key Endpoints:
 
-[Full OpenAPI specification](https://github.com/dammycute/straw_hat_team/blob/straw_hat_team/api_specs.yaml)
+[Full OpenAPI specification](https://github.com/dammycute/straw_hat_team/blob/straw_hat_team/api_specs.yaml) <br />
 [SwaggerUI Documentation](https://app.swaggerhub.com/apis-docs/JUSTCOVENANT_1/your-api/1.0.0)
 
 1. Home
