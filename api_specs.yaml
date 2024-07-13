@@ -1218,7 +1218,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LocalizationResponse'
-                
+
   #Email Templates
   /email-templates:
   get:
@@ -1229,7 +1229,7 @@ paths:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/EmailTemplatesResponse'
+            $ref: '#/components/schemas/AdminEmailTemplatesResponse'
   post:
     summary: Create a new email template
     requestBody:
@@ -1250,32 +1250,37 @@ paths:
       summary: Update an email template
       parameters:
         - name: id
-        in: path
-        description: ID of the email template to update
-        required: true
+          in: path
+          description: ID of the email template to update
+          required: true
+          schema:
+            type: string # Assuming ID is of type string
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/EmailTemplateRequest'
       responses:
         '200':
-        description: Email template updated successfully
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmailTemplateResponse'
+          description: Email template updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplateResponse'
+
     delete:
       summary: Delete an email template
       parameters:
         - name: id
-        in: path
-        description: ID of the email template to delete
-        required: true
+          in: path
+          description: ID of the email template to delete
+          required: true
+          schema:
+            type: string # Assuming ID is of type string
       responses:
         '200':
-        description: Email template deleted successfully
-
+          description: Email template deleted successfully
   #Activity Log
   /activity-logs:
     get:
@@ -1293,30 +1298,31 @@ paths:
   /push-notifications:
     get:
       summary: Get all push notifications
-      description: Get all push notifications
+      description: Retrieve all push notifications
       responses:
         '200':
-        description: Push notifications retrieved successfully
+          description: Push notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushNotificationResponse'
+
+    post:
+      summary: Create a push notification
+      description: Create a new push notification
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PushNotificationResponse'
-    post:
-      summary: Create a push notification
-      description: Create a push notification
-      requestBody:
-        content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PushNotificationRequest'
+              $ref: '#/components/schemas/PushNotificationRequest'
       responses:
-      '200':
-      description: Push notification created successfully
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PushNotificationResponse'
-
+        '200':
+          description: Push notification created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushNotificationResponse'
 
 components:
   schemas:
@@ -2040,9 +2046,9 @@ components:
           type: string
         region:
           type: string
-    
+
     # Email Templates
-    EmailTemplatesResponse:
+    AdminEmailTemplatesResponse:
       type: object
       properties:
         templates:
@@ -2077,9 +2083,6 @@ components:
       properties:
       pushNotification:
         type: string
-
-
-
 
   securitySchemes:
     bearerAuth:
